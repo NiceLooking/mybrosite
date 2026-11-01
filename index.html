@@ -1,0 +1,1545 @@
+<!DOCTYPE html>
+<html lang="ru" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0a0b10">
+  <meta
+    name="description"
+    content="BRO BAZA — боулинг, игровая зона, фуд-корт, кальянный лаунж и интеллектуальные квизы в Волжском."
+  >
+
+  <title>BRO BAZA — боулинг и отдых в Волжском</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Unbounded:wght@600;700;800&display=swap"
+    rel="stylesheet"
+  >
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            graphite: "#0a0b10",
+            panel: "#11131b",
+            purple: "#8b5cf6",
+            pink: "#ec4899",
+            cyan: "#06b6d4",
+            lime: "#10b981"
+          },
+          fontFamily: {
+            sans: ["Manrope", "sans-serif"],
+            display: ["Unbounded", "sans-serif"]
+          },
+          boxShadow: {
+            purple: "0 0 45px rgba(139,92,246,.22)",
+            pink: "0 0 35px rgba(236,72,153,.20)",
+            cyan: "0 0 35px rgba(6,182,212,.18)"
+          }
+        }
+      }
+    };
+  </script>
+
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+  <script defer src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    :root {
+      color-scheme: dark;
+    }
+
+    html {
+      scrollbar-color: #8b5cf6 #0a0b10;
+    }
+
+    body {
+      background:
+        radial-gradient(circle at 85% 5%, rgba(139, 92, 246, .15), transparent 27rem),
+        radial-gradient(circle at 15% 30%, rgba(6, 182, 212, .08), transparent 25rem),
+        #0a0b10;
+    }
+
+    [x-cloak] {
+      display: none !important;
+    }
+
+    .font-display {
+      font-family: "Unbounded", sans-serif;
+    }
+
+    .text-gradient {
+      background: linear-gradient(110deg, #ffffff 10%, #a78bfa 48%, #ec4899 85%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .noise {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      pointer-events: none;
+      opacity: .025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.7'/%3E%3C/svg%3E");
+    }
+
+    .glass {
+      background: rgba(17, 19, 27, .72);
+      border: 1px solid rgba(255, 255, 255, .09);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+    }
+
+    .neon-border {
+      position: relative;
+    }
+
+    .neon-border::before {
+      content: "";
+      position: absolute;
+      inset: -1px;
+      z-index: -1;
+      border-radius: inherit;
+      background: linear-gradient(135deg, rgba(139,92,246,.8), rgba(236,72,153,.45), rgba(6,182,212,.5));
+      opacity: 0;
+      transition: opacity .35s ease;
+    }
+
+    .neon-border:hover::before {
+      opacity: 1;
+    }
+
+    .grid-bg {
+      background-image:
+        linear-gradient(rgba(139, 92, 246, .055) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(139, 92, 246, .055) 1px, transparent 1px);
+      background-size: 42px 42px;
+    }
+
+    .floating {
+      animation: float 5s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    .hero-orb {
+      animation: orb 9s ease-in-out infinite alternate;
+      filter: blur(70px);
+    }
+
+    @keyframes orb {
+      from { transform: translate3d(-6%, -4%, 0) scale(.9); }
+      to { transform: translate3d(7%, 5%, 0) scale(1.15); }
+    }
+
+    .lane-card {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .lane-card::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #8b5cf6, transparent);
+      transform: scaleX(0);
+      transition: transform .35s ease;
+    }
+
+    .lane-card:hover::after {
+      transform: scaleX(1);
+    }
+
+    .lane-selected {
+      border-color: #8b5cf6;
+      box-shadow: 0 0 30px rgba(139, 92, 246, .22);
+      background: rgba(139, 92, 246, .1);
+    }
+
+    .time-selected {
+      background: #8b5cf6;
+      color: white;
+      border-color: #8b5cf6;
+      box-shadow: 0 0 20px rgba(139, 92, 246, .25);
+    }
+
+    .menu-item {
+      transition: background-color .25s ease, border-color .25s ease, transform .25s ease;
+    }
+
+    .menu-item:hover {
+      transform: translateX(4px);
+      border-color: rgba(236, 72, 153, .4);
+      background: rgba(236, 72, 153, .06);
+    }
+
+    .ticker-track {
+      animation: ticker 28s linear infinite;
+    }
+
+    @keyframes ticker {
+      to { transform: translateX(-50%); }
+    }
+
+    .route-line {
+      stroke-dasharray: 8 8;
+      animation: route 18s linear infinite;
+    }
+
+    @keyframes route {
+      to { stroke-dashoffset: -160; }
+    }
+
+    .quiz-card {
+      background:
+        linear-gradient(145deg, rgba(139,92,246,.11), transparent 50%),
+        rgba(17,19,27,.82);
+    }
+
+    .quiz-card:nth-child(2) {
+      background:
+        linear-gradient(145deg, rgba(236,72,153,.11), transparent 50%),
+        rgba(17,19,27,.82);
+    }
+
+    .quiz-card:nth-child(3) {
+      background:
+        linear-gradient(145deg, rgba(6,182,212,.11), transparent 50%),
+        rgba(17,19,27,.82);
+    }
+
+    .mobile-menu {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .35s ease;
+    }
+
+    .mobile-menu.is-open {
+      max-height: 600px;
+    }
+
+    .scrollbar-none {
+      scrollbar-width: none;
+    }
+
+    .scrollbar-none::-webkit-scrollbar {
+      display: none;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+      }
+    }
+  </style>
+</head>
+
+<body class="min-h-screen overflow-x-hidden bg-graphite font-sans text-white antialiased">
+  <div class="noise"></div>
+
+  <!-- Header -->
+  <header
+    x-data="{ open: false, scrolled: false }"
+    @scroll.window="scrolled = window.scrollY > 30"
+    class="fixed inset-x-0 top-0 z-50 border-b transition-all duration-300"
+    :class="scrolled ? 'border-white/10 bg-graphite/90 py-3 shadow-2xl backdrop-blur-xl' : 'border-transparent bg-transparent py-5'"
+  >
+    <div class="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+      <a href="#hero" class="group flex items-center gap-3" aria-label="BRO BAZA — главная">
+        <div
+          class="grid h-11 w-11 place-items-center rounded-xl border border-purple/50 bg-purple/10 font-display text-lg font-extrabold text-purple shadow-purple transition group-hover:scale-105 group-hover:bg-purple group-hover:text-white"
+        >
+          B
+        </div>
+
+        <div class="leading-none">
+          <div class="font-display text-lg font-extrabold tracking-tight">
+            BRO <span class="text-pink">BAZA</span>
+          </div>
+          <div class="mt-1 text-[9px] font-bold uppercase tracking-[.28em] text-white/40">
+            Волжский
+          </div>
+        </div>
+      </a>
+
+      <nav class="hidden items-center gap-7 lg:flex" aria-label="Основная навигация">
+        <a href="#zones" class="text-sm font-semibold text-white/65 transition hover:text-white">Зоны</a>
+        <a href="#food" class="text-sm font-semibold text-white/65 transition hover:text-white">Фуд-корт</a>
+        <a href="#bowling" class="text-sm font-semibold text-white/65 transition hover:text-white">Боулинг</a>
+        <a href="#quizzes" class="text-sm font-semibold text-white/65 transition hover:text-white">Квизы</a>
+        <a href="#contacts" class="text-sm font-semibold text-white/65 transition hover:text-white">Контакты</a>
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <a
+          href="tel:+79275215167"
+          class="hidden items-center gap-2 text-sm font-semibold text-white/70 transition hover:text-white sm:flex"
+        >
+          <i data-lucide="phone" class="h-4 w-4 text-cyan"></i>
+          8 (927) 521-51-67
+        </a>
+
+        <button
+          type="button"
+          class="hidden rounded-xl bg-gradient-to-r from-purple to-pink px-5 py-3 text-xs font-extrabold uppercase tracking-wider text-white shadow-pink transition hover:-translate-y-0.5 hover:shadow-[0_12px_30px_rgba(236,72,153,.28)] sm:block"
+          @click="$dispatch('open-booking')"
+        >
+          Забронировать
+        </button>
+
+        <button
+          type="button"
+          class="grid h-11 w-11 place-items-center rounded-xl border border-white/10 bg-white/5 lg:hidden"
+          @click="open = !open"
+          :aria-expanded="open"
+          aria-label="Открыть меню"
+        >
+          <i :data-lucide="open ? 'x' : 'menu'" class="h-5 w-5"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="mobile-menu border-t border-white/10 bg-graphite/95 backdrop-blur-xl lg:hidden" :class="open && 'is-open'">
+      <nav class="mx-auto flex max-w-7xl flex-col gap-1 px-6 py-5" aria-label="Мобильная навигация">
+        <a href="#zones" @click="open = false" class="rounded-xl px-4 py-3 font-semibold text-white/75 hover:bg-white/5 hover:text-white">Зоны</a>
+        <a href="#food" @click="open = false" class="rounded-xl px-4 py-3 font-semibold text-white/75 hover:bg-white/5 hover:text-white">Фуд-корт</a>
+        <a href="#bowling" @click="open = false" class="rounded-xl px-4 py-3 font-semibold text-white/75 hover:bg-white/5 hover:text-white">Боулинг</a>
+        <a href="#quizzes" @click="open = false" class="rounded-xl px-4 py-3 font-semibold text-white/75 hover:bg-white/5 hover:text-white">Квизы</a>
+        <a href="#contacts" @click="open = false" class="rounded-xl px-4 py-3 font-semibold text-white/75 hover:bg-white/5 hover:text-white">Контакты</a>
+        <button
+          type="button"
+          class="mt-3 rounded-xl bg-gradient-to-r from-purple to-pink px-5 py-3 font-extrabold uppercase tracking-wider"
+          @click="open = false; $dispatch('open-booking')"
+        >
+          Забронировать
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero -->
+    <section id="hero" class="relative flex min-h-screen items-center overflow-hidden pt-28">
+      <div class="grid-bg absolute inset-0"></div>
+      <div class="hero-orb absolute right-[8%] top-[14%] h-72 w-72 rounded-full bg-purple/20"></div>
+      <div class="hero-orb absolute bottom-[8%] left-[5%] h-64 w-64 rounded-full bg-pink/15 [animation-delay:1.5s]"></div>
+      <div class="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-graphite to-transparent"></div>
+
+      <div class="relative mx-auto grid w-full max-w-7xl items-center gap-14 px-4 pb-20 pt-10 sm:px-6 lg:grid-cols-[1.05fr_.95fr] lg:px-8">
+        <div data-aos="fade-right">
+          <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-lime/30 bg-lime/10 px-4 py-2 text-xs font-bold uppercase tracking-[.16em] text-lime">
+            <span class="h-2 w-2 animate-pulse rounded-full bg-lime"></span>
+            Открыты ежедневно · 11:00–18:00
+          </div>
+
+          <h1 class="font-display text-4xl font-extrabold uppercase leading-[1.08] sm:text-6xl lg:text-7xl">
+            <span class="text-gradient">Собери</span><br>
+            свой идеальный
+            <span class="text-pink">вечер</span>
+          </h1>
+
+          <p class="mt-7 max-w-2xl text-base leading-8 text-white/60 sm:text-lg">
+            Боулинг, PS4, бильярд, квизы, шаурма и кальянная комната в одном месте.
+            Приходи один или собирай компанию — мы уже придумали, как сделать ваш вечер лучше.
+          </p>
+
+          <div class="mt-9 flex flex-col gap-3 sm:flex-row">
+            <button
+              type="button"
+              class="group inline-flex items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-purple to-pink px-7 py-4 text-sm font-extrabold uppercase tracking-wider shadow-pink transition hover:-translate-y-1"
+              @click="$dispatch('open-booking')"
+            >
+              Выбрать дорожку
+              <i data-lucide="arrow-up-right" class="h-5 w-5 transition group-hover:translate-x-1 group-hover:-translate-y-1"></i>
+            </button>
+
+            <a
+              href="#zones"
+              class="inline-flex items-center justify-center gap-3 rounded-xl border border-white/15 bg-white/5 px-7 py-4 text-sm font-bold text-white transition hover:border-cyan/50 hover:bg-cyan/10"
+            >
+              Изучить зоны
+              <i data-lucide="chevron-down" class="h-5 w-5"></i>
+            </a>
+          </div>
+
+          <div class="mt-12 grid max-w-2xl grid-cols-3 gap-3">
+            <div class="glass rounded-2xl p-4">
+              <div class="font-display text-2xl font-extrabold text-white">7</div>
+              <div class="mt-1 text-xs font-semibold text-white/45">дорожек</div>
+            </div>
+            <div class="glass rounded-2xl p-4">
+              <div class="font-display text-2xl font-extrabold text-cyan">700+</div>
+              <div class="mt-1 text-xs font-semibold text-white/45">игр на PS4</div>
+            </div>
+            <div class="glass rounded-2xl p-4">
+              <div class="font-display text-2xl font-extrabold text-lime">0 ₽</div>
+              <div class="mt-1 text-xs font-semibold text-white/45">вход в игровую</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="relative" data-aos="fade-left" data-aos-delay="150">
+          <div class="absolute -inset-6 rounded-[2rem] bg-gradient-to-br from-purple/20 via-transparent to-pink/20 blur-2xl"></div>
+
+          <div class="glass relative overflow-hidden rounded-[2rem] border-white/15 p-3 shadow-2xl">
+            <img
+              src="https://images.unsplash.com/photo-1579917999888-932faa75191b?auto=format&fit=crop&w=1200&q=85"
+              alt="Друзья отдыхают в игровом пространстве"
+              class="h-[440px] w-full rounded-[1.4rem] object-cover sm:h-[520px]"
+            >
+
+            <div class="absolute inset-x-6 bottom-6 rounded-2xl border border-white/10 bg-black/65 p-4 backdrop-blur-xl">
+              <div class="flex items-center justify-between gap-4">
+                <div>
+                  <div class="text-[10px] font-extrabold uppercase tracking-[.24em] text-cyan">Игровая зона</div>
+                  <div class="mt-1 font-bold">PlayStation · Бильярд · Аэрохоккей</div>
+                </div>
+                <span class="rounded-lg bg-lime px-3 py-1.5 text-[10px] font-extrabold uppercase text-black">Free по чеку</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="floating absolute -left-4 top-8 rounded-2xl border border-pink/30 bg-panel/90 p-4 shadow-pink backdrop-blur-xl sm:-left-10">
+            <i data-lucide="gamepad-2" class="h-6 w-6 text-pink"></i>
+            <div class="mt-2 text-xs font-bold">PlayStation 4</div>
+            <div class="text-[10px] text-white/40">3 консоли</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ticker -->
+    <div class="overflow-hidden border-y border-white/10 bg-purple/5 py-4">
+      <div class="ticker-track flex w-max items-center">
+        <template x-for="pass in 2" :key="pass">
+          <div class="flex shrink-0 items-center gap-8 pr-8 font-display text-xs font-bold uppercase tracking-[.22em] text-white/45">
+            <span>Bowling</span><span class="text-pink">✦</span>
+            <span>Free Game Zone</span><span class="text-cyan">✦</span>
+            <span>Авторская шаурма</span><span class="text-purple">✦</span>
+            <span>Hookah 18+</span><span class="text-lime">✦</span>
+            <span>Quiz Night</span><span class="text-pink">✦</span>
+            <span>Bowling</span><span class="text-pink">✦</span>
+            <span>Free Game Zone</span><span class="text-cyan">✦</span>
+            <span>Авторская шаурма</span><span class="text-purple">✦</span>
+            <span>Hookah 18+</span><span class="text-lime">✦</span>
+            <span>Quiz Night</span><span class="text-pink">✦</span>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <!-- Zones -->
+    <section id="zones" class="relative py-24 sm:py-32">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col justify-between gap-8 lg:flex-row lg:items-end" data-aos="fade-up">
+          <div class="max-w-3xl">
+            <div class="mb-4 text-xs font-extrabold uppercase tracking-[.3em] text-pink">Одно место — четыре сценария</div>
+            <h2 class="font-display text-3xl font-extrabold uppercase leading-tight sm:text-5xl">
+              Выбирай свой <span class="text-gradient">формат вечера</span>
+            </h2>
+          </div>
+          <p class="max-w-md text-sm leading-7 text-white/50">
+            Начни с боулинга, загляни в игровую или соберись на квиз.
+            В BRO BAZA можно смешивать активности в один вечер.
+          </p>
+        </div>
+
+        <div class="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          <article class="group relative min-h-[390px] overflow-hidden rounded-3xl border border-white/10 bg-panel" data-aos="fade-up">
+            <img
+              src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=800&q=85"
+              alt="Боулинг в BRO BAZA"
+              class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-110"
+            >
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent"></div>
+            <div class="absolute inset-x-0 bottom-0 p-6">
+              <div class="mb-3 grid h-11 w-11 place-items-center rounded-xl border border-purple/40 bg-purple/20 text-purple backdrop-blur">
+                <i data-lucide="circle-dot" class="h-6 w-6"></i>
+              </div>
+              <h3 class="font-display text-xl font-extrabold uppercase">Боулинг</h3>
+              <p class="mt-2 text-sm leading-6 text-white/55">7 дорожек, живой праздник и максимум эмоций.</p>
+              <span class="mt-4 inline-block text-xs font-bold uppercase tracking-wider text-purple">От 750 ₽/час</span>
+            </div>
+          </article>
+
+          <article class="group relative min-h-[390px] overflow-hidden rounded-3xl border border-white/10 bg-panel" data-aos="fade-up" data-aos-delay="75">
+            <img
+              src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=800&q=85"
+              alt="Игровая зона BRO BAZA"
+              class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-110"
+            >
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent"></div>
+            <div class="absolute inset-x-0 bottom-0 p-6">
+              <div class="mb-3 grid h-11 w-11 place-items-center rounded-xl border border-cyan/40 bg-cyan/20 text-cyan backdrop-blur">
+                <i data-lucide="gamepad-2" class="h-6 w-6"></i>
+              </div>
+              <h3 class="font-display text-xl font-extrabold uppercase">Игровая зона</h3>
+              <p class="mt-2 text-sm leading-6 text-white/55">PS4, бильярд, аэрохоккей, пинг-понг и кикер.</p>
+              <span class="mt-4 inline-block text-xs font-bold uppercase tracking-wider text-cyan">Бесплатно по чеку</span>
+            </div>
+          </article>
+
+          <article class="group relative min-h-[390px] overflow-hidden rounded-3xl border border-white/10 bg-panel" data-aos="fade-up" data-aos-delay="150">
+            <img
+              src="https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=800&q=85"
+              alt="Фуд-корт BRO BAZA"
+              class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-110"
+            >
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent"></div>
+            <div class="absolute inset-x-0 bottom-0 p-6">
+              <div class="mb-3 grid h-11 w-11 place-items-center rounded-xl border border-pink/40 bg-pink/20 text-pink backdrop-blur">
+                <i data-lucide="utensils" class="h-6 w-6"></i>
+              </div>
+              <h3 class="font-display text-xl font-extrabold uppercase">Фуд-корт</h3>
+              <p class="mt-2 text-sm leading-6 text-white/55">Авторская шаурма и 22 места для большой компании.</p>
+              <span class="mt-4 inline-block text-xs font-bold uppercase tracking-wider text-pink">От 259 ₽</span>
+            </div>
+          </article>
+
+          <article class="group relative min-h-[390px] overflow-hidden rounded-3xl border border-white/10 bg-panel" data-aos="fade-up" data-aos-delay="225">
+            <img
+              src="https://images.unsplash.com/photo-1603905179139-db12ab535ca0?auto=format&fit=crop&w=800&q=85"
+              alt="Кальянный лаунж BRO BAZA"
+              class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-110"
+            >
+            <div class="absolute inset-0 bg-gradient-to-t from-black via-black/25 to-transparent"></div>
+            <div class="absolute inset-x-0 bottom-0 p-6">
+              <div class="mb-3 grid h-11 w-11 place-items-center rounded-xl border border-lime/40 bg-lime/20 text-lime backdrop-blur">
+                <i data-lucide="flame" class="h-6 w-6"></i>
+              </div>
+              <h3 class="font-display text-xl font-extrabold uppercase">Hookah Lounge</h3>
+              <p class="mt-2 text-sm leading-6 text-white/55">7 приватных столов, мягкие диваны и настолки.</p>
+              <span class="mt-4 inline-block text-xs font-bold uppercase tracking-wider text-lime">Только 18+</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bowling booking -->
+    <section id="bowling" class="relative py-24 sm:py-32">
+      <div class="absolute inset-0 bg-gradient-to-b from-purple/5 via-transparent to-pink/5"></div>
+
+      <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="grid gap-12 lg:grid-cols-[.8fr_1.2fr] lg:items-start">
+          <div class="lg:sticky lg:top-28" data-aos="fade-right">
+            <div class="mb-4 text-xs font-extrabold uppercase tracking-[.3em] text-purple">Бронирование боулинга</div>
+            <h2 class="font-display text-3xl font-extrabold uppercase leading-tight sm:text-5xl">
+              Твой <span class="text-gradient">боулинг</span><br>уже ждёт
+            </h2>
+            <p class="mt-6 max-w-lg text-sm leading-7 text-white/50 sm:text-base">
+              Выбери одну из семи дорожек и удобный час. Предоплата — 30%.
+              Остаток оплати на месте после игры.
+            </p>
+
+            <div class="mt-8 space-y-3">
+              <div class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[.04] p-4">
+                <span class="text-sm text-white/60">Будни</span>
+                <span class="font-display text-lg font-bold text-white">750 ₽/час</span>
+              </div>
+              <div class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[.04] p-4">
+                <span class="text-sm text-white/60">Выходные</span>
+                <span class="font-display text-lg font-bold text-pink">1200 ₽/час</span>
+              </div>
+              <div class="flex items-center justify-between rounded-2xl border border-lime/20 bg-lime/[.06] p-4">
+                <span class="text-sm text-lime">Предоплата</span>
+                <span class="font-display text-lg font-bold text-lime">30%</span>
+              </div>
+            </div>
+
+            <div class="mt-8 rounded-2xl border border-cyan/20 bg-cyan/[.06] p-5">
+              <div class="flex gap-3">
+                <i data-lucide="info" class="mt-0.5 h-5 w-5 shrink-0 text-cyan"></i>
+                <p class="text-xs leading-6 text-white/55">
+                  Игровая зона открыта строго по чеку с фуд-корта.
+                  Любая покупка даёт безлимитный доступ на всё время визита.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div
+            class="glass rounded-[1.75rem] p-5 shadow-2xl sm:p-8"
+            data-aos="fade-left"
+            x-data="bowlingBooking"
+          >
+            <div class="mb-8 flex items-center justify-between gap-4">
+              <div>
+                <div class="text-xs font-bold uppercase tracking-[.2em] text-white/35">Шаг <span x-text="step"></span> из 3</div>
+                <h3 class="mt-2 font-display text-xl font-bold uppercase sm:text-2xl" x-text="stepTitle"></h3>
+              </div>
+              <div class="flex gap-2">
+                <template x-for="item in 3" :key="item">
+                  <span
+                    class="h-1.5 w-9 rounded-full transition"
+                    :class="item <= step ? 'bg-purple shadow-[0_0_12px_rgba(139,92,246,.6)]' : 'bg-white/10'"
+                  ></span>
+                </template>
+              </div>
+            </div>
+
+            <!-- Step 1 -->
+            <div x-show="step === 1" class="space-y-6">
+              <div>
+                <h4 class="mb-4 text-sm font-bold uppercase tracking-wider">Выберите дорожку</h4>
+                <div class="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                  <template x-for="lane in lanes" :key="lane">
+                    <button
+                      type="button"
+                      class="lane-card rounded-2xl border border-white/10 bg-black/20 p-4 text-left transition hover:border-purple/50"
+                      :class="selectedLane === lane && 'lane-selected'"
+                      @click="selectedLane = lane"
+                    >
+                      <div class="font-display text-lg font-bold" x-text="lane"></div>
+                      <div class="mt-1 text-[10px] font-semibold uppercase tracking-wider text-white/35">Дорожка</div>
+                    </button>
+                  </template>
+                </div>
+              </div>
+
+              <div>
+                <h4 class="mb-4 text-sm font-bold uppercase tracking-wider">Дата</h4>
+                <input
+                  type="date"
+                  x-model="date"
+                  class="w-full rounded-xl border border-white/10 bg-black/25 px-4 py-3.5 text-sm text-white outline-none transition focus:border-purple"
+                >
+              </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div x-show="step === 2" class="space-y-6">
+              <div>
+                <h4 class="mb-4 text-sm font-bold uppercase tracking-wider">Выберите время</h4>
+                <div class="grid grid-cols-3 gap-3 sm:grid-cols-4">
+                  <template x-for="time in times" :key="time">
+                    <button
+                      type="button"
+                      class="rounded-xl border border-white/10 bg-black/20 px-3 py-3 text-sm font-bold transition hover:border-purple/50"
+                      :class="selectedTime === time && 'time-selected'"
+                      @click="selectedTime = time"
+                      x-text="time"
+                    ></button>
+                  </template>
+                </div>
+              </div>
+
+              <div class="rounded-2xl border border-white/10 bg-black/20 p-5">
+                <div class="flex items-center justify-between text-sm">
+                  <span class="text-white/45">Дорожка</span>
+                  <span class="font-bold" x-text="selectedLane ? `№ ${selectedLane}` : 'Не выбрана'"></span>
+                </div>
+                <div class="mt-3 flex items-center justify-between text-sm">
+                  <span class="text-white/45">Дата и время</span>
+                  <span class="font-bold" x-text="selectedTime || 'Не выбрано'"></span>
+                </div>
+                <div class="mt-3 flex items-center justify-between text-sm">
+                  <span class="text-white/45">Тариф</span>
+                  <span class="font-bold text-cyan" x-text="isWeekend ? 'Выходной · 1200 ₽' : 'Будни · 750 ₽'"></span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 3 -->
+            <div x-show="step === 3" class="space-y-5">
+              <div class="grid gap-4 sm:grid-cols-2">
+                <label class="block">
+                  <span class="mb-2 block text-xs font-bold uppercase tracking-wider text-white/45">Ваше имя</span>
+                  <input
+                    type="text"
+                    x-model="name"
+                    placeholder="Как к вам обращаться"
+                    class="w-full rounded-xl border border-white/10 bg-black/25 px-4 py-3.5 text-sm outline-none transition focus:border-purple"
+                  >
+                </label>
+
+                <label class="block">
+                  <span class="mb-2 block text-xs font-bold uppercase tracking-wider text-white/45">Телефон</span>
+                  <input
+                    type="tel"
+                    x-model="phone"
+                    placeholder="+7 (___) ___-__-__"
+                    class="w-full rounded-xl border border-white/10 bg-black/25 px-4 py-3.5 text-sm outline-none transition focus:border-purple"
+                  >
+                </label>
+              </div>
+
+              <label class="block">
+                <span class="mb-2 block text-xs font-bold uppercase tracking-wider text-white/45">Количество игроков</span>
+                <select
+                  x-model="players"
+                  class="w-full rounded-xl border border-white/10 bg-black/25 px-4 py-3.5 text-sm outline-none transition focus:border-purple"
+                >
+                  <option value="2">2 игрока</option>
+                  <option value="4">4 игрока</option>
+                  <option value="6">6 игроков</option>
+                  <option value="8">8 игроков</option>
+                  <option value="10">10 игроков</option>
+                </select>
+              </label>
+
+              <div class="rounded-2xl border border-purple/25 bg-purple/[.08] p-5">
+                <div class="flex items-end justify-between gap-4">
+                  <div>
+                    <div class="text-xs font-bold uppercase tracking-wider text-white/40">К оплате сейчас · 30%</div>
+                    <div class="mt-2 font-display text-3xl font-extrabold text-white" x-text="formatPrice(prepayment)"></div>
+                  </div>
+                  <div class="text-right text-xs leading-5 text-white/40">
+                    <div>Полная стоимость: <span x-text="formatPrice(total)"></span></div>
+                    <div>Остаток на месте: <span x-text="formatPrice(total - prepayment)"></span></div>
+                  </div>
+                </div>
+              </div>
+
+              <button
+                type="button"
+                class="w-full rounded-xl bg-gradient-to-r from-purple to-pink px-6 py-4 text-sm font-extrabold uppercase tracking-wider transition hover:-translate-y-0.5 hover:shadow-pink"
+                @click="completeBooking"
+              >
+                Перейти к оплате
+              </button>
+
+              <p class="text-center text-[11px] leading-5 text-white/30">
+                Нажимая кнопку, вы соглашаетесь с правилами бронирования и обработкой персональных данных.
+              </p>
+            </div>
+
+            <!-- Navigation -->
+            <div class="mt-8 flex items-center justify-between border-t border-white/10 pt-6">
+              <button
+                type="button"
+                class="rounded-xl border border-white/10 px-5 py-3 text-xs font-bold uppercase tracking-wider text-white/60 transition hover:border-white/30 hover:text-white disabled:opacity-30"
+                :disabled="step === 1"
+                @click="previousStep"
+              >
+                Назад
+              </button>
+
+              <button
+                x-show="step < 3"
+                type="button"
+                class="rounded-xl bg-white px-6 py-3 text-xs font-extrabold uppercase tracking-wider text-black transition hover:bg-purple hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+                :disabled="!canContinue"
+                @click="nextStep"
+              >
+                Далее
+              </button>
+            </div>
+
+            <div x-show="submitted" x-cloak class="mt-6 rounded-2xl border border-lime/30 bg-lime/10 p-5 text-center">
+              <i data-lucide="check-circle-2" class="mx-auto h-9 w-9 text-lime"></i>
+              <div class="mt-3 font-display text-lg font-bold uppercase">Бронь создана</div>
+              <p class="mt-2 text-sm text-white/55">
+                Предоплата <span x-text="formatPrice(prepayment)"></span>. Чек и детали брони отправлены в рабочий Telegram-чат.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Food court -->
+    <section id="food" class="relative py-24 sm:py-32">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="grid gap-14 lg:grid-cols-[.95fr_1.05fr] lg:items-center">
+          <div class="relative" data-aos="fade-right">
+            <div class="absolute -inset-8 rounded-full bg-pink/10 blur-3xl"></div>
+            <div class="relative overflow-hidden rounded-[2rem] border border-white/10">
+              <img
+                src="https://images.unsplash.com/photo-1561651823-34feb02250e4?auto=format&fit=crop&w=1100&q=85"
+                alt="Авторская шаурма BRO BAZA"
+                class="h-[560px] w-full object-cover"
+              >
+              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+              <div class="absolute bottom-0 left-0 right-0 p-7">
+                <div class="text-xs font-extrabold uppercase tracking-[.25em] text-pink">Вкус Волжского</div>
+                <h3 class="mt-2 font-display text-3xl font-extrabold uppercase">Шаурма с характером</h3>
+              </div>
+            </div>
+
+            <div class="floating absolute -right-3 top-8 rounded-2xl border border-lime/25 bg-panel/90 p-4 shadow-2xl backdrop-blur-xl sm:-right-7">
+              <div class="font-display text-2xl font-extrabold text-lime">22</div>
+              <div class="text-xs font-bold text-white/45">посадочных места</div>
+            </div>
+          </div>
+
+          <div data-aos="fade-left">
+            <div class="mb-4 text-xs font-extrabold uppercase tracking-[.3em] text-pink">Фуд-корт</div>
+            <h2 class="font-display text-3xl font-extrabold uppercase leading-tight sm:text-5xl">
+              Районы — в каждом <span class="text-gradient">ролле</span>
+            </h2>
+            <p class="mt-6 max-w-xl text-sm leading-7 text-white/50 sm:text-base">
+              Авторская линейка шаурмы, в которой каждый район Волжского получил
+              собственные ингредиенты, название и характер.
+            </p>
+
+            <div class="mt-8 grid gap-3 sm:grid-cols-2">
+              <article class="menu-item rounded-2xl border border-white/10 bg-white/[.035] p-4">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <h4 class="font-display font-bold">«Волжанка»</h4>
+                    <p class="mt-1 text-xs text-white/40">С креветками и фирменным соусом</p>
+                  </div>
+                  <span class="shrink-0 font-bold text-pink">319 ₽</span>
+                </div>
+              </article>
+
+              <article class="menu-item rounded-2xl border border-white/10 bg-white/[.035] p-4">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <h4 class="font-display font-bold">«Квартальская»</h4>
+                    <p class="mt-1 text-xs text-white/40">Сочная курица и свежие овощи</p>
+                  </div>
+                  <span class="shrink-0 font-bold text-pink">от 259 ₽</span>
+                </div>
+              </article>
+
+              <article class="menu-item rounded-2xl border border-white/10 bg-white/[.035] p-4">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <h4 class="font-display font-bold">«Рабочая»</h4>
+                    <p class="mt-1 text-xs text-white/40">Сытная и большая</p>
+                  </div>
+                  <span class="shrink-0 font-bold text-pink">от 289 ₽</span>
+                </div>
+              </article>
+
+              <article class="menu-item rounded-2xl border border-white/10 bg-white/[.035] p-4">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <h4 class="font-display font-bold">«Суслик»</h4>
+                    <p class="mt-1 text-xs text-white/40">Острый, дерзкий, без компромиссов</p>
+                  </div>
+                  <span class="shrink-0 font-bold text-pink">289 ₽</span>
+                </div>
+              </article>
+
+              <article class="menu-item rounded-2xl border border-white/10 bg-white/[.035] p-4">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <h4 class="font-display font-bold">«Фонтанка»</h4>
+                    <p class="mt-1 text-xs text-white/40">Выразительный вкус и большая порция</p>
+                  </div>
+                  <span class="shrink-0 font-bold text-pink">по меню</span>
+                </div>
+              </article>
+
+              <article class="menu-item rounded-2xl border border-white/10 bg-white/[.035] p-4">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <h4 class="font-display font-bold">«Спутник»</h4>
+                    <p class="mt-1 text-xs text-white/40">Классика с новым характером</p>
+                  </div>
+                  <span class="shrink-0 font-bold text-pink">по меню</span>
+                </div>
+              </article>
+
+              <article class="menu-item rounded-2xl border border-white/10 bg-white/[.035] p-4">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <h4 class="font-display font-bold">«Молл»</h4>
+                    <p class="mt-1 text-xs text-white/40">Насыщенный вкус и хруст</p>
+                  </div>
+                  <span class="shrink-0 font-bold text-pink">по меню</span>
+                </div>
+              </article>
+
+              <article class="menu-item rounded-2xl border border-white/10 bg-white/[.035] p-4">
+                <div class="flex items-start justify-between gap-4">
+                  <div>
+                    <h4 class="font-display font-bold">«Дробина»</h4>
+                    <p class="mt-1 text-xs text-white/40">Для тех, кто выбирает острое</p>
+                  </div>
+                  <span class="shrink-0 font-bold text-pink">по меню</span>
+                </div>
+              </article>
+            </div>
+
+            <div class="mt-7 flex items-start gap-3 rounded-2xl border border-cyan/20 bg-cyan/[.06] p-5">
+              <i data-lucide="ticket-check" class="mt-0.5 h-5 w-5 shrink-0 text-cyan"></i>
+              <p class="text-xs leading-6 text-white/55">
+                Любой заказ с фуд-корта открывает безлимитный доступ в бесплатную игровую зону.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Game zone -->
+    <section id="game-zone" class="relative overflow-hidden py-24 sm:py-32">
+      <div class="grid-bg absolute inset-0 opacity-70"></div>
+      <div class="absolute left-1/2 top-0 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-purple to-transparent"></div>
+
+      <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-3xl text-center" data-aos="fade-up">
+          <div class="mb-4 text-xs font-extrabold uppercase tracking-[.3em] text-cyan">Free Game Zone</div>
+          <h2 class="font-display text-3xl font-extrabold uppercase leading-tight sm:text-5xl">
+            Играй <span class="text-gradient">бесплатно</span>
+          </h2>
+          <p class="mx-auto mt-6 max-w-2xl text-sm leading-7 text-white/50 sm:text-base">
+            Покажи чек из фуд-корта — и получай безлимитный доступ ко всей игровой зоне.
+          </p>
+        </div>
+
+        <div class="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          <article class="glass neon-border rounded-3xl p-6 text-center" data-aos="fade-up">
+            <div class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-purple/15 text-purple">
+              <i data-lucide="gamepad-2" class="h-7 w-7"></i>
+            </div>
+            <h3 class="mt-5 font-display text-lg font-bold">3 × PS4</h3>
+            <p class="mt-2 text-xs leading-5 text-white/45">Каталог из 700+ игр</p>
+          </article>
+
+          <article class="glass neon-border rounded-3xl p-6 text-center" data-aos="fade-up" data-aos-delay="75">
+            <div class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-cyan/15 text-cyan">
+              <i data-lucide="circle-dot" class="h-7 w-7"></i>
+            </div>
+            <h3 class="mt-5 font-display text-lg font-bold">Бильярд</h3>
+            <p class="mt-2 text-xs leading-5 text-white/45">Русский и американский</p>
+          </article>
+
+          <article class="glass neon-border rounded-3xl p-6 text-center" data-aos="fade-up" data-aos-delay="150">
+            <div class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-pink/15 text-pink">
+              <i data-lucide="goal" class="h-7 w-7"></i>
+            </div>
+            <h3 class="mt-5 font-display text-lg font-bold">Аэрохоккей</h3>
+            <p class="mt-2 text-xs leading-5 text-white/45">Динамичные дуэли</p>
+          </article>
+
+          <article class="glass neon-border rounded-3xl p-6 text-center" data-aos="fade-up" data-aos-delay="225">
+            <div class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-lime/15 text-lime">
+              <i data-lucide="table-tennis" class="h-7 w-7"></i>
+            </div>
+            <h3 class="mt-5 font-display text-lg font-bold">Пинг-понг</h3>
+            <p class="mt-2 text-xs leading-5 text-white/45">Быстрый и азартный</p>
+          </article>
+
+          <article class="glass neon-border rounded-3xl p-6 text-center" data-aos="fade-up" data-aos-delay="300">
+            <div class="mx-auto grid h-14 w-14 place-items-center rounded-2xl bg-amber-400/15 text-amber-400">
+              <i data-lucide="goal" class="h-7 w-7"></i>
+            </div>
+            <h3 class="mt-5 font-display text-lg font-bold">Кикер</h3>
+            <p class="mt-2 text-xs leading-5 text-white/45">Классика на большой экран</p>
+          </article>
+        </div>
+
+        <div class="mt-10 flex justify-center">
+          <a href="#food" class="inline-flex items-center gap-2 rounded-xl border border-lime/25 bg-lime/10 px-6 py-3 text-xs font-extrabold uppercase tracking-wider text-lime transition hover:bg-lime hover:text-black">
+            Получить доступ по чеку
+            <i data-lucide="arrow-right" class="h-4 w-4"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Hookah lounge -->
+    <section id="hookah" class="relative py-24 sm:py-32">
+      <div class="absolute right-0 top-1/4 h-96 w-96 rounded-full bg-lime/[.06] blur-3xl"></div>
+
+      <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="grid gap-12 lg:grid-cols-2 lg:items-center">
+          <div data-aos="fade-right">
+            <div class="mb-4 text-xs font-extrabold uppercase tracking-[.3em] text-lime">Strictly 18+</div>
+            <h2 class="font-display text-3xl font-extrabold uppercase leading-tight sm:text-5xl">
+              Медленный вечер.<br><span class="text-gradient">Твой лаунж.</span>
+            </h2>
+            <p class="mt-6 max-w-lg text-sm leading-7 text-white/50 sm:text-base">
+              Семь уютных столов с мягкими диванами, премиальным табаком
+              и настольными играми. Здесь можно не спешить.
+            </p>
+
+            <div class="mt-8 grid grid-cols-2 gap-3">
+              <div class="glass rounded-2xl p-4">
+                <i data-lucide="armchair" class="h-6 w-6 text-lime"></i>
+                <div class="mt-3 font-display text-lg font-bold">7 столов</div>
+                <div class="mt-1 text-xs text-white/40">с мягкими диванами</div>
+              </div>
+              <div class="glass rounded-2xl p-4">
+                <i data-lucide="crown" class="h-6 w-6 text-lime"></i>
+                <div class="mt-3 font-display text-lg font-bold">Premium</div>
+                <div class="mt-1 text-xs text-white/40">табачные миксы</div>
+              </div>
+              <div class="glass rounded-2xl p-4">
+                <i data-lucide="dice-5" class="h-6 w-6 text-lime"></i>
+                <div class="mt-3 font-display text-lg font-bold">Настолки</div>
+                <div class="mt-1 text-xs text-white/40">для своих компаний</div>
+              </div>
+              <div class="glass rounded-2xl p-4">
+                <i data-lucide="badge-check" class="h-6 w-6 text-lime"></i>
+                <div class="mt-3 font-display text-lg font-bold">18+</div>
+                <div class="mt-1 text-xs text-white/40">вход только совершеннолетним</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="relative" data-aos="fade-left">
+            <img
+              src="https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=1200&q=85"
+              alt="Атмосфера кальянного лаунжа BRO BAZA"
+              class="h-[560px] w-full rounded-[2rem] border border-white/10 object-cover shadow-2xl"
+            >
+            <div class="absolute inset-0 rounded-[2rem] bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+            <div class="absolute bottom-7 left-7 right-7">
+              <span class="inline-flex rounded-lg border border-lime/30 bg-black/50 px-3 py-2 text-[10px] font-extrabold uppercase tracking-wider text-lime backdrop-blur">
+                Для гостей 18+
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Quizzes -->
+    <section id="quizzes" class="relative py-24 sm:py-32">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col justify-between gap-8 lg:flex-row lg:items-end" data-aos="fade-up">
+          <div class="max-w-3xl">
+            <div class="mb-4 text-xs font-extrabold uppercase tracking-[.3em] text-pink">Quiz Night</div>
+            <h2 class="font-display text-3xl font-extrabold uppercase leading-tight sm:text-5xl">
+              Проверь знания.<br><span class="text-gradient">Собери команду.</span>
+            </h2>
+          </div>
+          <p class="max-w-md text-sm leading-7 text-white/50">
+            Интеллектуальные квизы с бонусными вопросами, музыкальными раундами
+            и церемонией награждения.
+          </p>
+        </div>
+
+        <div class="mt-14 grid gap-5 lg:grid-cols-3">
+          <article class="quiz-card group rounded-3xl border border-white/10 p-7 transition hover:-translate-y-2 hover:border-purple/40" data-aos="fade-up">
+            <div class="flex items-center justify-between">
+              <span class="rounded-lg bg-purple/15 px-3 py-2 text-[10px] font-extrabold uppercase tracking-wider text-purple">Каждую пятницу</span>
+              <span class="font-display text-sm font-bold text-white/40">№01</span>
+            </div>
+            <h3 class="mt-8 font-display text-2xl font-extrabold uppercase">Кино & сериалы</h3>
+            <p class="mt-3 text-sm leading-6 text-white/45">Кадры, цитаты, персонажи и soundtrack. Для тех, кто смотрит всё.</p>
+            <div class="mt-7 flex items-center gap-5 border-t border-white/10 pt-5 text-xs text-white/40">
+              <span class="flex items-center gap-2"><i data-lucide="clock" class="h-4 w-4 text-cyan"></i> 19:00</span>
+              <span class="flex items-center gap-2"><i data-lucide="users" class="h-4 w-4 text-cyan"></i> 4–6 человек</span>
+            </div>
+          </article>
+
+          <article class="quiz-card group rounded-3xl border border-white/10 p-7 transition hover:-translate-y-2 hover:border-pink/40" data-aos="fade-up" data-aos-delay="100">
+            <div class="flex items-center justify-between">
+              <span class="rounded-lg bg-pink/15 px-3 py-2 text-[10px] font-extrabold uppercase tracking-wider text-pink">Суббота</span>
+              <span class="font-display text-sm font-bold text-white/40">№02</span>
+            </div>
+            <h3 class="mt-8 font-display text-2xl font-extrabold uppercase">Спорт & факты</h3>
+            <p class="mt-3 text-sm leading-6 text-white/45">Спорт, наука и факты, в которые сложно поверить без проверки.</p>
+            <div class="mt-7 flex items-center gap-5 border-t border-white/10 pt-5 text-xs text-white/40">
+              <span class="flex items-center gap-2"><i data-lucide="clock" class="h-4 w-4 text-cyan"></i> 18:00</span>
+              <span class="flex items-center gap-2"><i data-lucide="users" class="h-4 w-4 text-cyan"></i> 4–6 человек</span>
+            </div>
+          </article>
+
+          <article class="quiz-card group rounded-3xl border border-white/10 p-7 transition hover:-translate-y-2 hover:border-cyan/40" data-aos="fade-up" data-aos-delay="200">
+            <div class="flex items-center justify-between">
+              <span class="rounded-lg bg-cyan/15 px-3 py-2 text-[10px] font-extrabold uppercase tracking-wider text-cyan">По заявке</span>
+              <span class="font-display text-sm font-bold text-white/40">№03</span>
+            </div>
+            <h3 class="mt-8 font-display text-2xl font-extrabold uppercase">Корпоративный квиз</h3>
+            <p class="mt-3 text-sm leading-6 text-white/45">Командный формат для коллег, друзей, дня рождения или корпоратива.</p>
+            <div class="mt-7 flex items-center gap-5 border-t border-white/10 pt-5 text-xs text-white/40">
+              <span class="flex items-center gap-2"><i data-lucide="calendar" class="h-4 w-4 text-cyan"></i> Любой день</span>
+              <span class="flex items-center gap-2"><i data-lucide="users" class="h-4 w-4 text-cyan"></i> 6–12 человек</span>
+            </div>
+          </article>
+        </div>
+
+        <div class="mt-10 flex flex-col items-center justify-between gap-5 rounded-3xl border border-white/10 bg-white/[.035] p-6 sm:flex-row" data-aos="fade-up">
+          <div>
+            <h3 class="font-display text-xl font-bold uppercase">Хочешь собрать свою команду?</h3>
+            <p class="mt-1 text-sm text-white/45">Оставь заявку — администратор поможет с регистрацией.</p>
+          </div>
+          <button
+            type="button"
+            class="shrink-0 rounded-xl bg-white px-6 py-3.5 text-xs font-extrabold uppercase tracking-wider text-black transition hover:bg-pink hover:text-white"
+            @click="showQuizModal = true"
+          >
+            Зарегистрироваться
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gallery carousel -->
+    <section class="relative overflow-hidden py-24 sm:py-32">
+      <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mb-12 flex flex-col justify-between gap-5 sm:flex-row sm:items-end" data-aos="fade-up">
+          <div>
+            <div class="mb-4 text-xs font-extrabold uppercase tracking-[.3em] text-cyan">Внутри BRO BAZA</div>
+            <h2 class="font-display text-3xl font-extrabold uppercase sm:text-5xl">Загляни на огонёк</h2>
+          </div>
+          <div class="flex gap-2">
+            <button
+              type="button"
+              class="grid h-11 w-11 place-items-center rounded-xl border border-white/10 bg-white/5 transition hover:border-purple hover:text-purple"
+              @click="galleryIndex = (galleryIndex - 1 + gallery.length) % gallery.length"
+              aria-label="Предыдущее фото"
+            >
+              <i data-lucide="chevron-left" class="h-5 w-5"></i>
+            </button>
+            <button
+              type="button"
+              class="grid h-11 w-11 place-items-center rounded-xl border border-white/10 bg-white/5 transition hover:border-purple hover:text-purple"
+              @click="galleryIndex = (galleryIndex + 1) % gallery.length"
+              aria-label="Следующее фото"
+            >
+              <i data-lucide="chevron-right" class="h-5 w-5"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="overflow-hidden rounded-[2rem] border border-white/10" data-aos="fade-up">
+          <div
+            class="flex transition-transform duration-700 ease-out"
+            :style="`transform: translateX(-${galleryIndex * 100}%)`"
+          >
+            <template x-for="(image, index) in gallery" :key="image.src">
+              <div class="relative min-w-full">
+                <img
+                  :src="image.src"
+                  :alt="image.alt"
+                  class="h-[420px] w-full object-cover sm:h-[620px]"
+                >
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                <div class="absolute bottom-0 left-0 right-0 p-7 sm:p-10">
+                  <div class="text-xs font-extrabold uppercase tracking-[.25em]" :class="image.color" x-text="image.label"></div>
+                  <h3 class="mt-2 font-display text-2xl font-extrabold uppercase sm:text-4xl" x-text="image.title"></h3>
+                </div>
+              </div>
+            </template>
+          </div>
+        </div>
+
+        <div class="mt-5 flex justify-center gap-2">
+          <template x-for="(image, index) in gallery" :key="index">
+            <button
+              type="button"
+              class="h-1.5 rounded-full transition-all"
+              :class="galleryIndex === index ? 'w-10 bg-purple' : 'w-4 bg-white/20 hover:bg-white/40'"
+              @click="galleryIndex = index"
+              :aria-label="`Перейти к фото ${index + 1}`"
+            ></button>
+          </template>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contacts -->
+    <section id="contacts" class="relative py-24 sm:py-32">
+      <div class="absolute inset-0 bg-gradient-to-b from-transparent via-purple/[.06] to-transparent"></div>
+
+      <div class="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="grid gap-8 lg:grid-cols-[1.1fr_.9fr]">
+          <div class="overflow-hidden rounded-[2rem] border border-white/10 bg-panel" data-aos="fade-right">
+            <div class="relative h-[520px]">
+              <iframe
+                title="BRO BAZA на карте"
+                src="https://yandex.ru/map-widget/v1/?text=%D0%92%D0%BE%D0%BB%D0%B6%D1%81%D0%BA%D0%B8%D0%B9%2C%20%D1%83%D0%BB%D0%B8%D1%86%D0%B0%20%D0%9B%D0%B5%D0%BD%D0%B8%D0%BD%D0%B0%2C%2051%D0%90&z=17"
+                class="h-full w-full border-0 grayscale-[35%] contrast-[1.05]"
+                loading="lazy"
+                allowfullscreen
+              ></iframe>
+
+              <div class="absolute bottom-5 left-5 right-5 rounded-2xl border border-white/10 bg-black/75 p-5 backdrop-blur-xl sm:right-auto sm:min-w-[340px]">
+                <div class="text-xs font-extrabold uppercase tracking-[.2em] text-purple">Мы находимся здесь</div>
+                <div class="mt-2 font-display text-lg font-bold uppercase">г. Волжский, ул. Ленина, 51А</div>
+                <a href="tel:+79275215167" class="mt-2 inline-flex items-center gap-2 text-sm text-cyan">
+                  <i data-lucide="phone" class="h-4 w-4"></i>
+                  8 (927) 521-51-67
+                </a>
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col justify-center" data-aos="fade-left">
+            <div class="mb-4 text-xs font-extrabold uppercase tracking-[.3em] text-cyan">Контакты</div>
+            <h2 class="font-display text-3xl font-extrabold uppercase leading-tight sm:text-5xl">
+              Загляни<br><span class="text-gradient">к нам</span>
+            </h2>
+            <p class="mt-6 max-w-lg text-sm leading-7 text-white/50 sm:text-base">
+              Мы работаем без выходных. Приходите играть, есть, общаться
+              или просто хорошо проводить время.
+            </p>
+
+            <div class="mt-8 space-y-3">
+              <a href="tel:+79275215167" class="group flex items-center justify-between rounded-2xl border border-white/10 bg-white/[.035] p-5 transition hover:border-cyan/40">
+                <span class="flex items-center gap-4">
+                  <span class="grid h-11 w-11 place-items-center rounded-xl bg-cyan/10 text-cyan"><i data-lucide="phone" class="h-5 w-5"></i></span>
+                  <span>
+                    <span class="block text-xs text-white/40">Позвонить</span>
+                    <span class="mt-1 block font-display font-bold">8 (927) 521-51-67</span>
+                  </span>
+                </span>
+                <i data-lucide="arrow-up-right" class="h-5 w-5 text-white/30 transition group-hover:text-cyan"></i>
+              </a>
+
+              <div class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[.035] p-5">
+                <span class="flex items-center gap-4">
+                  <span class="grid h-11 w-11 place-items-center rounded-xl bg-purple/10 text-purple"><i data-lucide="clock" class="h-5 w-5"></i></span>
+                  <span>
+                    <span class="block text-xs text-white/40">Ежедневно</span>
+                    <span class="mt-1 block font-display font-bold">11:00–18:00</span>
+                  </span>
+                </span>
+                <span class="rounded-lg bg-lime/10 px-3 py-2 text-[10px] font-bold uppercase text-lime">Без выходных</span>
+              </div>
+
+              <div class="flex items-center justify-between rounded-2xl border border-white/10 bg-white/[.035] p-5">
+                <span class="flex items-center gap-4">
+                  <span class="grid h-11 w-11 place-items-center rounded-xl bg-pink/10 text-pink"><i data-lucide="map-pin" class="h-5 w-5"></i></span>
+                  <span>
+                    <span class="block text-xs text-white/40">Адрес</span>
+                    <span class="mt-1 block font-display font-bold">ул. Ленина, 51А</span>
+                  </span>
+                </span>
+                <span class="text-xs text-white/40">Волжский</span>
+              </div>
+            </div>
+
+            <div class="mt-8 flex gap-3">
+              <a href="#" aria-label="Instagram" class="grid h-12 w-12 place-items-center rounded-xl border border-white/10 bg-white/5 text-white/60 transition hover:border-pink hover:bg-pink/10 hover:text-pink">
+                <i data-lucide="instagram" class="h-5 w-5"></i>
+              </a>
+              <a href="#" aria-label="Telegram" class="grid h-12 w-12 place-items-center rounded-xl border border-white/10 bg-white/5 text-white/60 transition hover:border-cyan hover:bg-cyan/10 hover:text-cyan">
+                <i data-lucide="send" class="h-5 w-5"></i>
+              </a>
+              <a href="https://wa.me/79275215167" aria-label="WhatsApp" class="grid h-12 w-12 place-items-center rounded-xl border border-white/10 bg-white/5 text-white/60 transition hover:border-lime hover:bg-lime/10 hover:text-lime">
+                <i data-lucide="message-circle" class="h-5 w-5"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="border-t border-white/10 bg-black/20 py-10">
+    <div class="mx-auto flex max-w-7xl flex-col gap-6 px-4 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
+      <a href="#hero" class="flex items-center gap-3">
+        <div class="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-br from-purple to-pink font-display font-extrabold">B</div>
+        <span class="font-display text-lg font-extrabold">BRO <span class="text-pink">BAZA</span></span>
+      </a>
+
+      <p class="text-xs text-white/35">© <span id="currentYear"></span> BRO BAZA. Все права защищены.</p>
+
+      <div class="flex flex-wrap gap-5 text-xs font-semibold text-white/40">
+        <a href="#" class="transition hover:text-white">Политика конфиденциальности</a>
+        <a href="#" class="transition hover:text-white">Публичная оферта</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Floating booking widget -->
+  <div class="fixed bottom-5 right-5 z-40 flex flex-col items-end gap-3">
+    <button
+      type="button"
+      class="group flex items-center gap-3 rounded-2xl border border-purple/30 bg-panel/90 p-2.5 pl-4 shadow-2xl backdrop-blur-xl transition hover:-translate-y-1 hover:border-purple"
+      @click="$dispatch('open-booking')"
+      aria-label="Быстрая бронь"
+    >
+      <span class="text-xs font-bold text-white/70">Быстрая бронь</span>
+      <span class="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-purple to-pink text-white shadow-pink transition group-hover:scale-105">
+        <i data-lucide="calendar-check" class="h-5 w-5"></i>
+      </span>
+    </button>
+
+    <div class="flex gap-2">
+      <a href="#" aria-label="Instagram" class="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-panel/90 text-white/55 backdrop-blur-xl transition hover:text-pink">
+        <i data-lucide="instagram" class="h-4 w-4"></i>
+      </a>
+      <a href="https://wa.me/79275215167" aria-label="WhatsApp" class="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-panel/90 text-white/55 backdrop-blur-xl transition hover:text-lime">
+        <i data-lucide="message-circle" class="h-4 w-4"></i>
+      </a>
+      <a href="#" aria-label="Telegram" class="grid h-10 w-10 place-items-center rounded-xl border border-white/10 bg-panel/90 text-white/55 backdrop-blur-xl transition hover:text-cyan">
+        <i data-lucide="send" class="h-4 w-4"></i>
+      </a>
+    </div>
+  </div>
+
+  <!-- Booking modal -->
+  <div
+    x-data="modalBooking"
+    x-show="open"
+    x-cloak
+    x-transition.opacity
+    @open-booking.window="open = true; reset()"
+    @keydown.escape.window="open = false"
+    class="fixed inset-0 z-[70] grid place-items-center overflow-y-auto bg-black/80 p-4 backdrop-blur-md"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="booking-title"
+  >
+    <div
+      class="relative my-6 w-full max-w-lg rounded-[1.75rem] border border-white/10 bg-panel p-6 shadow-2xl sm:p-8"
+      @click.outside="open = false"
+      x-transition:enter="transition duration-300 ease-out"
+      x-transition:enter-start="opacity-0 scale-95 translate-y-4"
+      x-transition:enter-end="opacity-100 scale-100 translate-y-0"
+    >
+      <button
+        type="button"
+        class="absolute right-4 top-4 grid h-9 w-9 place-items-center rounded-lg bg-white/5 text-white/50 transition hover:bg-white/10 hover:text-white"
+        @click="open = false"
+        aria-label="Закрыть окно"
+      >
+        <i data-lucide="x" class="h-5 w-5"></i>
+      </button>
+
+      <div class="text-xs font-extrabold uppercase tracking-[.25em] text-purple">Быстрое бронирование</div>
+      <h2 id="booking-title" class="mt-2 font-display text-2xl font-extrabold uppercase">Забронировать дорожку</h2>
+
+      <div class="mt-6 space-y-4">
+        <label class="block">
+          <span class="mb-2 block text-xs font-bold uppercase tracking-wider text-white/40">Имя</span>
+          <input x-model="name" type="text" placeholder="Ваше имя" class="w-full rounded-xl border border-white/10 bg-black/25 px-4 py-3.5 text-sm outline-none focus:border-purple">
+        </label>
+
+        <label class="block">
+          <span class="mb-2 block text-xs font-bold uppercase tracking-wider text-white/40">Телефон</span>
+          <input x-model="phone" type="tel" placeholder="+7 (___) ___-__-__" class="w-full rounded-xl border border-white/10 bg-black/25 px-4 py-3.5 text-sm outline-none focus:border-purple">
+        </label>
+
+        <div class="grid grid-cols-2 gap-3">
+          <label class="block">
+            <span class="mb-2 block text-xs font-bold uppercase tracking-wider text-white/40">Дорожка</span>
+            <select x-model="lane" class="w-full rounded-xl border border-white/10 bg-black/25 px-4 py-3.5 text-sm outline-none focus:border-purple">
+              <option value="">Выберите</option>
+              <template x-for="item in 7" :key="item"><option :value="item" x-text="`№ ${item}`"></option></template>
+            </select>
+          </label>
+
+          <label class="block">
+            <span class="mb-2 block text-xs font-bold uppercase tracking-wider text-white/40">Время</span>
+            <select x-model="time" class="w-full rounded-xl border border-white/10 bg-black/25 px-4 py-3.5 text-sm outline-none focus:border-purple">
+              <option value="">Выберите</option>
+              <template x-for="item in times" :key="item"><option :value="item" x-text="item"></option></template>
+            </select>
+          </label>
+        </div>
+
+        <div class="rounded-xl border border-cyan/20 bg-cyan/[.06] p-4 text-xs leading-5 text-white/50">
+          Для подтверждения брони потребуется предоплата 30%.
+          Остаток оплачивается на месте.
+        </div>
+
+        <button
+          type="button"
+          class="w-full rounded-xl bg-gradient-to-r from-purple to-pink px-6 py-4 text-sm font-extrabold uppercase tracking-wider transition hover:-translate-y-0.5 hover:shadow-pink"
+          @click="submit"
+        >
+          Перейти к оплате
+        </button>
+
+        <div x-show="success" x-cloak class="rounded-xl border border-lime/25 bg-lime/10 p-4 text-center text-sm text-lime">
+          Заявка принята. Чек и детали отправлены в Telegram.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Quiz registration modal -->
+  <div
+    x-data="{ open: false, sent: false, name: '', phone: '', team: '' }"
+    x-show="open"
+    x-cloak
+    x-transition.opacity
+    @keydown.escape.window="open = false"
+    class="fixed inset-0 z-[70] grid place-items-center bg-black/80 p-4 backdrop-blur-md"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="quiz-modal-title"
+  >
+    <div
+      class="relative w-full max-w-md rounded-[1.75rem] border border-white/10 bg-panel p-6 shadow-2xl sm:p-8"
+      @click.outside="open = false"
+    >
+      <button type="button" class="absolute right-4 top-4 text-white/40 hover:text-white" @click="open = false" aria-label="Закрыть">
+        <i data-lucide="x" class="h-5 w-5"></i>
+      </button>
+
+      <div x-show="!sent">
+        <div class="text-xs font-extrabold uppercase tracking-[.25em] text-pink">Регистрация</div>
+        <h2 id="quiz-modal-title" class="mt-2 font-display text-2xl font-extrabold uppercase">Команда на квиз</h2>
+
+        <div class="mt-6 space-y-4">
+          <input x-model="name" type="text" placeholder="Имя" class="w-full rounded-xl border border-white/10 bg-black/25 px-4 py-3.5 text-sm outline-none focus:border-pink">
+          <input x-model="phone" type="tel" placeholder="Телефон" class="w-full rounded-xl border border-white/10 bg-black/25 px-4 py-3.5 text-sm outline-none focus:border-pink">
+          <input x-model="team" type="text" placeholder="Название команды" class="w-full rounded-xl border border-white/10 bg-black/25 px-4 py-3.5 text-sm outline-none focus:border-pink">
+          <button type="button" class="w-full rounded-xl bg-gradient-to-r from-pink to-purple px-6 py-4 text-sm font-extrabold uppercase tracking-wider" @click="sent = true">
+            Зарегистрироваться
+          </button>
+        </div>
+      </div>
+
+      <div x-show="sent" x-cloak class="py-8 text-center">
+        <i data-lucide="badge-check" class="mx-auto h-14 w-14 text-lime"></i>
+        <h3 class="mt-4 font-display text-xl font-extrabold uppercase">Вы зарегистрированы</h3>
+        <p class="mt-3 text-sm text-white/45">Администратор свяжется с вами и расскажет о дате мероприятия.</p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener("alpine:init", () => {
+      Alpine.data("bowlingBooking", () => ({
+        step: 1,
+        selectedLane: null,
+        selectedTime: "",
+        date: "",
+        name: "",
+        phone: "",
+        players: "4",
+        submitted: false,
+        lanes: [1, 2, 3, 4, 5, 6, 7],
+        times: ["11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"],
+
+        get stepTitle() {
+          return ["Выбор дорожки", "Время игры", "Подтверждение"][this.step - 1];
+        },
+
+        get isWeekend() {
+          if (!this.date) return false;
+          const day = new Date(`${this.date}T12:00:00`).getDay();
+          return day === 0 || day === 6;
+        },
+
+        get total() {
+          return this.isWeekend ? 1200 : 750;
+        },
+
+        get prepayment() {
+          return Math.round(this.total * 0.3);
+        },
+
+        get canContinue() {
+          if (this.step === 1) return Boolean(this.selectedLane && this.date);
+          if (this.step === 2) return Boolean(this.selectedTime);
+          return true;
+        },
+
+        nextStep() {
+          if (this.canContinue && this.step < 3) this.step++;
+        },
+
+        previousStep() {
+          if (this.step > 1) this.step--;
+        },
+
+        formatPrice(value) {
+          return new Intl.NumberFormat("ru-RU").format(value) + " ₽";
+        },
+
+        completeBooking() {
+          if (!this.name.trim() || this.phone.replace(/\D/g, "").length < 11) return;
+          this.submitted = true;
+        }
+      }));
+
+      Alpine.data("modalBooking", () => ({
+        open: false,
+        success: false,
+        name: "",
+        phone: "",
+        lane: "",
+        time: "",
+        times: ["11:00", "12:00", "13:00", "14:00", "15:00", "16:00", "17:00"],
+
+        reset() {
+          this.success = false;
+        },
+
+        submit() {
+          if (!this.name || !this.phone || !this.lane || !this.time) return;
+          this.success = true;
+        }
+      }));
+
+      Alpine.data("app", () => ({
+        galleryIndex: 0,
+        showQuizModal: false,
+
+        gallery: [
+          {
+            src: "https://images.unsplash.com/photo-1530103862676-de8c9debad1d?auto=format&fit=crop&w=1400&q=85",
+            alt: "Боулинг BRO BAZA",
+            label: "7 дорожек",
+            title: "Боулинг",
+            color: "text-purple"
+          },
+          {
+            src: "https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=1400&q=85",
+            alt: "Игровая зона BRO BAZA",
+            label: "PlayStation 4",
+            title: "Игровая зона",
+            color: "text-cyan"
+          },
+          {
+            src: "https://images.unsplash.com/photo-1552566626-52f8b828add9?auto=format&fit=crop&w=1400&q=85",
+            alt: "Фуд-корт BRO BAZA",
+            label: "22 места",
+            title: "Фуд-корт",
+            color: "text-pink"
+          },
+          {
+            src: "https://images.unsplash.com/photo-1596422846543-75c6fc197f07?auto=format&fit=crop&w=1400&q=85",
+            alt: "Кальянный лаунж BRO BAZA",
+            label: "Только 18+",
+            title: "Hookah lounge",
+            color: "text-lime"
+          }
+        ]
+      }));
+    });
+  </script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      if (window.AOS) {
+        AOS.init({
+          duration: 800,
+          easing: "ease-out-cubic",
+          once: true,
+          offset: 50
+        });
+      }
+
+      if (window.lucide) {
+        window.lucide.createIcons();
+      }
+
+      const year = document.getElementById("currentYear");
+      if (year) year.textContent = new Date().getFullYear();
+
+      document.addEventListener("alpine:initialized", () => {
+        window.lucide?.createIcons();
+      });
+
+      window.addEventListener("scroll", () => {
+        window.lucide?.createIcons({
+          attrs: {
+            "stroke-width": 1.8
+          }
+        });
+      }, { passive: true });
+    });
+  </script>
+</body>
+</html>
